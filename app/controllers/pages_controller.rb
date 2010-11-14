@@ -2,7 +2,7 @@ class PagesController < ApplicationController
   def home
   end
 
-  def contract
+  def contact
   end
 
 end
