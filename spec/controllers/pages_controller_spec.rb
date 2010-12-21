@@ -15,7 +15,7 @@ describe PagesController do
       get 'home'
       response.should be_success
     end
-    
+
     it "should have the right title" do
       get 'home'
       response.should have_tag("title", @base_title + " | Home")
