@@ -11,7 +11,23 @@ describe UsersController do
     it "should have the right title" do
       get :new
       response.should have_tag("title", /Sign up/)
-    end 
+    end
+    it "should have a name field" do
+      get :new
+      response.should have_tag("input[name=?][type=?]","user[name]","text")
+    end
+    it "should have an email field" do
+      get :new
+      response.should have_tag("input[name=?][type=?]","user[email]","text")
+    end
+    it "should have a password field" do
+      get :new
+      response.should have_tag("input[name=?][type=?]","user[password]","password")
+    end
+    it "should have a password confirmation field" do
+      get :new
+      response.should have_tag("input[name=?][type=?]","user[password_confirmation]","password")
+    end
   end
 
   describe "GET 'show'" do

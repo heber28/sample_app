@@ -18,8 +18,11 @@ class UsersController < ApplicationController
     else
       @title = 'Sign up'
       #render :template => "users/new"
-      #render "new"
+      #render "new
+      @user.password = nil
+      @user.password_confirmation = nil
       render :action => "new"
+      
     end
   end
 end
