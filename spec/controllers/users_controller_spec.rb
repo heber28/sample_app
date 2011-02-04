@@ -244,6 +244,19 @@ describe UsersController do
         response.should have_tag("a[href=?]", "/users?page=2", "2")
         response.should have_tag("a[href=?]", "/users?page=2", "Next &raquo;")
       end
+      
+      it "should have delete links for admins" do
+        @user.toggle!(:admin)
+        other_user = User.all.second
+        get :index
+        response.should have_tag("a[href=?]", user_path(other_user), "delete")
+      end
+   
+      it "should not have delete links for non-admins" do
+        other_user = User.all.second
+        get :index
+        response.should_not have_tag("a[href=?]", user_path(other_user), "delete")
+      end
     end
   end
 
@@ -281,9 +294,18 @@ describe UsersController do
         delete :destroy, :id => @user
         response.should redirect_to(users_path)
       end
+  
+      #it "should not be able to destroy itself" do
+      #  lambda do
+      #    destroy :destroy, :id => @admin
+      #    end.should_not change(User, :count)
+      #  end
+      #end
+
     end
   end
-
 end
+
+
 
 ###
