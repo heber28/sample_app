@@ -48,9 +48,9 @@ describe "Users" do
         fill_in :email,    :with => user.email
         fill_in :password, :with => user.password
         click_button
-        #controller.should be_signed_in
+        controller.should be_signed_in
         click_link "Sign out"
-        #controller.should_not be_signed_in
+        controller.should_not be_signed_in
       end
     end
   end
