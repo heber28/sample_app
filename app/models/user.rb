@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20101223125124
+# Schema version: 20110204170428
 #
 # Table name: users
 #
@@ -10,6 +10,8 @@
 #  updated_at         :datetime
 #  encrypted_password :string(255)
 #  salt               :string(255)
+#  remember_token     :string(255)
+#  admin              :boolean
 #
 
 class User < ActiveRecord::Base
@@ -52,6 +54,11 @@ class User < ActiveRecord::Base
     user = find_by_email(email)
     return nil  if user.nil?
     return user if user.has_password?(submitted_password)
+  end
+
+  def feed
+    Micropost.all(:conditions => ["user_id = ?", id])
+    #microposts
   end
 
   private

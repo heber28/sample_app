@@ -17,7 +17,9 @@ class UsersController < ApplicationController
   
   def show
     @user = User.find(params[:id])
-    @title = @user.name
+    @microposts = @user.microposts.paginate(:page => params[:page])
+    #@title = @user.name
+    @title = CGI.escapeHTML(@user.name)
   end
 
   def create
@@ -52,16 +54,29 @@ class UsersController < ApplicationController
     end
   end
 
+  #def destroy
+  #  user = User.find(params[:id])
+  #  if user.admin?
+  #    flash[:error] = "Admin user can't be destroyed."
+  #  else
+  #    user.destroy
+  #    flash[:success] = "User destroyed."
+  #  end 
+  #  redirect_to users_path   
+  #end
+
   def destroy
-    User.find(params[:id]).destroy
-    flash[:success] = "User destroyed."
+    user = User.find(params[:id])
+    unless current_user?(user)
+      user.destroy
+      flash[:success] = "User destroyed."
+    else
+      flash[:error] = "Admin user can't be destroyed."
+    end
     redirect_to users_path
   end
 
   private
-    def authenticate
-      deny_access unless signed_in?
-    end
    
     def correct_user
       @user = User.find(params[:id])
@@ -80,3 +95,4 @@ class UsersController < ApplicationController
       redirect_to(root_path) unless not signed_in?
     end   
 end
+

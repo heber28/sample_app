@@ -1,7 +1,7 @@
 <li>
-<%= image_tag(gravatar_url(user.email))%>
+<%= image_tag(gravatar_url(user.email, :size => 30))%>
 <%= link_to h(user.name), user, :target => "_blank"%>
-<% if current_user.admin? %>
+<% if current_user.admin? && current_user != user %>
 <%= link_to "delete", user, :method => :delete, :confirm => "You sure?" %>
 <% end %>
 </li>

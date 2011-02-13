@@ -3,8 +3,8 @@ require 'spec_helper'
 describe User do
   before(:each) do
     @attr = {
-      :name => "Jonas Brito",
-      :email => "jbrito@gmail.com",
+      :name => "John Doe",
+      :email => "johndoe@gmail.com",
       :password => "footbar",
       :password_confirmation => "footbar"
     }
@@ -84,7 +84,6 @@ describe User do
     end
   end
 
-
   describe "password encryption" do
     before(:each) do
       @user = User.create!(@attr)
@@ -158,17 +157,6 @@ describe User do
   end
 
   describe "micropost associations" do
-    
-    before(:each) do
-      @user = User.create(@attr)
-    end
-    
-    it "should have a microposts attribute" do
-      @user.should respond_to(:microposts)
-    end
-  end
-
-  describe "micropost associations" do
 
     before(:each) do
       @user = User.create(@attr)
@@ -188,7 +176,24 @@ describe User do
       @user.destroy
       [@mp1, @mp2].each do |micropost|
         Micropost.find_by_id(micropost.id).should be_nil
+      end       
+    end
+  
+    describe "status feed" do
+      it "should have a feed" do
+        @user.should respond_to(:feed)
       end
+
+      it "should include the user's microposts" do
+        @user.feed.include?(@mp1).should be_true
+        @user.feed.include?(@mp2).should be_true
+      end
+
+      it "should not include a different user's microposts" do
+        mp3 = Factory(:micropost,
+                      :user => Factory(:user, :email => Factory.next(:email)))
+        @user.feed.include?(mp3).should be_false
+      end    
     end
   end
 end
