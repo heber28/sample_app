@@ -41,7 +41,7 @@ describe UsersController do
       get :show, :id => @user
       response.should be_success
     end
-    
+
     it "should have the right title" do
       get :show, :id => @user
       response.should have_tag("title", /#{@user.name}/)
@@ -64,30 +64,54 @@ describe UsersController do
       response.should have_tag("span.content", mp1.content)
       response.should have_tag("span.content", mp2.content)
     end
-  
+
+    it "should paginate microposts" do
+      40.times{Factory(:micropost, :user => @user, :content => "Foo bar")}
+      get :show, :id => @user
+      response.should have_tag("div[class='pagination']")
+      response.should have_tag("div[class='pagination']")
+      response.should have_tag("span", "&laquo; Previous")
+      response.should have_tag("span", "1")
+      response.should have_tag("a[href=?]", "/users/1?page=2", "2")
+      response.should have_tag("a[href=?]", "/users/1?page=2", "Next &raquo;")
+    end
+
+    describe "for an unauthorized user" do
+
+      before(:each) do
+        wrong_user = Factory(:user, :email => Factory.next(:email))
+        test_sign_in(wrong_user)
+        @micropost = Factory(:micropost, :user => @user)
+      end
+
+      it "should not show delete link" do
+        get :show, :id => @user
+        response.should have_tag("span.timestamp", "Posted less than a minute ago.")
+      end
+    end
   end
 
   describe "POST 'create'" do
-    describe "failure" do      
+    describe "failure" do
       before(:each) do
-        @attr = { :name => "", :email => "", :password => "",
-                  :password_confirmation => "" }
+        @attr = {:name => "", :email => "", :password => "",
+        :password_confirmation => ""}
         @user = Factory.build(:user, @attr)
         User.stub!(:new).and_return(@user)
         @user.should_receive(:save).and_return(false)
       end
-    
+
       it "should not create a user" do
         lambda do
           post :create, :user => @attr
         end.should_not change(User, :count)
-      end      
-  
+      end
+
       it "should have the right title" do
         post :create, :user => @attr
         response.should have_tag("title", /sign up/i)
       end
-          
+
       it "should render the 'new' page" do
         post :create, :user => @attr
         response.should render_template('new')
@@ -95,8 +119,8 @@ describe UsersController do
     end
     describe "success" do
       before(:each) do
-        @attr = { :name => "New User", :email => "user@example.com",
-                  :password => "foobar", :password_confirmation => "foobar" }
+        @attr = {:name => "New User", :email => "user@example.com",
+        :password => "foobar", :password_confirmation => "foobar"}
         @user = Factory(:user, @attr)
         User.stub!(:new).and_return(@user)
         @user.should_receive(:save).and_return(true)
@@ -128,14 +152,14 @@ describe UsersController do
     it "should have the right title" do
       get :edit, :id => @user
       response.should have_tag("title", /edit user/i)
-    end      
+    end
     it "should have a link to change the Gravatar" do
       get :edit, :id => @user
       gravatar_url = "http://gravatar.com/emails"
       response.should have_tag("a[href=?]", gravatar_url, /change/i)
     end
   end
-      
+
   describe "PUT 'update'" do
     before(:each) do
       @user = Factory(:user)
@@ -144,29 +168,29 @@ describe UsersController do
     end
     describe "failure" do
       before(:each) do
-        @invalid_attr = { :email => "", :name => "" }
+        @invalid_attr = {:email => "", :name => ""}
         @user.should_receive(:update_attributes).and_return(false)
-      end      
+      end
       it "should render the 'edit' page" do
         put :update, :id => @user, :user => @invalid_attr
         response.should render_template('edit')
-      end      
+      end
       it "should have the right title" do
         put :update, :id => @user, :user => @invalid_attr
         response.should have_tag("title", /edit user/i)
       end
     end
-    
-    describe "success" do      
+
+    describe "success" do
       before(:each) do
-        @attr = { :name => "New Name", :email => "user@example.org",
-                  :password => "barbaz", :password_confirmation => "barbaz" }
+        @attr = {:name => "New Name", :email => "user@example.org",
+        :password => "barbaz", :password_confirmation => "barbaz"}
         @user.should_receive(:update_attributes).and_return(true)
-      end      
+      end
       it "should redirect to the user show page" do
         put :update, :id => @user, :user => @attr
         response.should redirect_to(user_path(@user))
-      end      
+      end
       it "should have a flash message" do
         put :update, :id => @user, :user => @attr
         flash[:success].should =~ /updated/
@@ -188,15 +212,15 @@ describe UsersController do
         response.should redirect_to(signin_path)
       end
     end
-    describe "for signed-in users" do      
+    describe "for signed-in users" do
       before(:each) do
         wrong_user = Factory(:user, :email => "user@example.net")
         test_sign_in(wrong_user)
-      end      
+      end
       it "should require matching users for 'edit'" do
         get :edit, :id => @user
         response.should redirect_to(root_path)
-      end      
+      end
       it "should require matching users for 'update'" do
         put :update, :id => @user, :user => {}
         response.should redirect_to(root_path)
@@ -213,37 +237,37 @@ describe UsersController do
       end
     end
 
-    describe "for signed-in users" do      
+    describe "for signed-in users" do
       before(:each) do
         @user = test_sign_in(Factory(:user))
         second = Factory(:user, :email => "another@example.com")
-        third  = Factory(:user, :email => "another@example.net")
-        
+        third = Factory(:user, :email => "another@example.net")
+
         @users = [@user, second, third]
         30.times do
           @users << Factory(:user, :email => Factory.next(:email))
         end
-        User.should_receive(:paginate).and_return(@users.paginate) 
+        User.should_receive(:paginate).and_return(@users.paginate)
         #User.should_receive(:all).and_return(@users)
       end
-      
+
       it "should be successful" do
         get :index
         response.should be_success
       end
-      
+
       it "should have the right title" do
         get :index
         response.should have_tag("title", /all users/i)
       end
-      
+
       it "should have an element for each user" do
         get :index
         @users[0..2].each do |user|
           response.should have_tag("li", user.name)
         end
       end
-      
+
       it "should paginate users" do
         get :index
         response.should have_tag("div.pagination")
@@ -253,14 +277,14 @@ describe UsersController do
         response.should have_tag("a[href=?]", "/users?page=2", "2")
         response.should have_tag("a[href=?]", "/users?page=2", "Next &raquo;")
       end
-      
+
       it "should have delete links for admins" do
         @user.toggle!(:admin)
         other_user = User.all.second
         get :index
         response.should have_tag("a[href=?]", user_path(other_user), "delete")
       end
-   
+
       it "should not have delete links for non-admins" do
         other_user = User.all.second
         get :index
@@ -270,11 +294,11 @@ describe UsersController do
   end
 
   describe "DELETE 'destroy'" do
-    
+
     before(:each) do
       @user = Factory(:user)
     end
-    
+
     describe "as a non-signed-in user" do
       it "should deny access" do
         delete :destroy, :id => @user
@@ -289,9 +313,9 @@ describe UsersController do
         response.should redirect_to(root_path)
       end
     end
-    
+
     describe "as an admin user" do
-      
+
       before(:each) do
         @admin = Factory(:user, :email => "admin@example.com", :admin => true)
         test_sign_in(@admin)
@@ -302,13 +326,13 @@ describe UsersController do
           delete :destroy, :id => @user
         end.should change(User, :count).by(-1)
       end
-      
+
       it "should redirect to the users page" do
         delete :destroy, :id => @user
         flash[:success].should =~ /destroyed/i
         response.should redirect_to(users_path)
       end
-      
+
       it "should not be able to destroy itself" do
         lambda do
           delete :destroy, :id => @admin
@@ -317,9 +341,9 @@ describe UsersController do
 
       it "should not destroy admin" do
         delete :destroy, :id => @admin
-        response.should redirect_to(users_path)  
+        response.should redirect_to(users_path)
         flash[:error].should =~ /Admin user can't be destroyed./i
       end
     end
   end
-end 
+end

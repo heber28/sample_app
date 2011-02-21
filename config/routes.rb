@@ -46,6 +46,10 @@ ActionController::Routing::Routes.draw do |map|
   #map.home '/', :controller => 'pages', :action => 'home'
 
   map.resources :users
+  map.resources :users, :has_many => :microposts
+  #map.resources :users do |user|
+  #  user.resources :microposts
+  #end
   map.resources :sessions, :only => [:new, :create, :destroy]
   map.resources :microposts, :only => [:create, :destroy]
   map.signin '/signin', :controller => 'sessions', :action => 'new'

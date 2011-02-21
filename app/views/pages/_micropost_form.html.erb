@@ -1,7 +1,12 @@
 <% form_for @micropost do |f| %>
   <%= f.error_messages %>
   <div class="field">
-    <%= f.text_area :content %>
+    <%= f.text_area :content, 
+    	:onkeydown => "CountLeft('micropost_content','left',140)", 
+    	:onkeyup => "CountLeft('micropost_content','left',140)" %><br />
+    <%= f.label :content, "Only 140 characters allowed" %>
+    <%= text_field_tag "left", "140", :size => "3", :readonly => true %>
+    <%= label_tag "left" %>
   </div>
   <div class="actions">
     <%= f.submit "Submit" %>

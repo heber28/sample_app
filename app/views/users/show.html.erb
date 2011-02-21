@@ -4,16 +4,13 @@
       <h2>
         <%= image_tag(gravatar_url(@user.email))%>
         <%= h @user.name %>
-      </h2>
-      
+      </h2>      
       <% unless @user.microposts.empty? %>
         <table class="microposts">
           <%= render @microposts %>
         </table>
         <%= will_paginate @microposts %>
       <% end %>
-
- 
     </td>
     <td class="sidebar round">
       <strong>Name</strong> <%= h @user.name %><br />

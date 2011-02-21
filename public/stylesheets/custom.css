@@ -189,6 +189,29 @@ table.microposts tr {
   height: 70px;
 }
 
+ol.microposts {
+  list-style:none;
+}
+
+ol.microposts li {
+  margin-left: -50px;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  border-top: 1px solid #333;
+  /*min-height: 5em;*/
+}
+
+ol.microposts li .gravatar {
+  vertical-align: top;
+  border: 1px solid #ccc;
+  float: left;
+}
+
+ol.microposts li span.timestamp {
+  font-size: 85%;
+  color: #666;
+}
+
 table.microposts tr td.gravatar {
   border-top: 1px solid #ccc;
   vertical-align: top;

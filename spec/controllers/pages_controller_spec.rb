@@ -59,7 +59,28 @@ describe PagesController do
     end
   end
 
+  describe "for signed-in users" do
+    before(:each) do
+      @user = test_sign_in(Factory(:user))
+    end
+    
+    it "should show plural for 0 microposts" do
+      get :home
+      response.should have_tag("span.microposts", "0 microposts")
+    end
 
+    it "should show singular for 1 micropost" do
+      1.times { Factory(:micropost, :user => @user, :content => "Foo bar") }
+      get :home
+      response.should have_tag("span.microposts", "1 micropost")
+    end
+
+    it "should show plural for many microposts" do
+      5.times { Factory(:micropost, :user => @user, :content => "Foo bar") }
+      get :home
+      response.should have_tag("span.microposts", "5 microposts")
+    end
+  end
 
 
 end

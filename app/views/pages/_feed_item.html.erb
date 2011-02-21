@@ -1,21 +1,22 @@
 <tr>
   <td class="gravatar">
-    <%= link_to (image_tag(gravatar_url (feed_item.user.email))), feed_item.user %>
+  <%= link_to (image_tag(gravatar_url (feed_item.user.email))), feed_item.user %>
   </td>
   <td class="micropost">
-    <span class="user">
-      <%= link_to h(feed_item.user.name), feed_item.user %>
+  <span class="user">
+    <%= link_to h(feed_item.user.name), feed_item.user %>
     </span>
-    <span class="content"><%= h feed_item.content %></span>
+    <%- #span class="content"><%= h feed_item.content ></span> -%>
+    <span class="content"><%= wrap h feed_item.content %></span>
     <span class="timestamp">
-      Posted <%= time_ago_in_words(feed_item.created_at) %> ago.
+    Posted <%= time_ago_in_words(feed_item.created_at) %> ago.
     </span>
   </td>
   <% if current_user?(feed_item.user) %>
   <td>
     <%= link_to "delete", feed_item, :method => :delete,
-                                     :confirm => "You sure?" %>
-  </td>
+    :confirm => "You sure?" %>
+    </td>
   <% end %>
 </tr>
-
+    

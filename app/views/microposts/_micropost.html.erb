@@ -1,14 +1,15 @@
 <tr>
   <td class="micropost">
-    <span class="content"><%= h micropost.content %></span>
-    <span class="timestamp">
-      Posted <%= time_ago_in_words(micropost.created_at) %> ago.
-    </span>
+      <%= image_tag(gravatar_url(micropost.user.email, :size => 30))%>
+      <%= link_to h(micropost.user.name), micropost.user %>
+      <span class="content">
+         <%= display wrap micropost.content %>      
+      </span>  
+      <span class="timestamp">
+        Posted <%= time_ago_in_words(micropost.created_at) %> ago.
+        <% if current_user?(micropost.user) %>
+          <%= link_to "delete", micropost, :method => :delete, :confirm => "You sure?" %>
+        <% end %>
+      </span>
   </td>
-  <% if current_user?(micropost.user) %>
-  <td>
-    <%= link_to "delete", micropost, :method => :delete,
-                                     :confirm => "You sure?" %>
-  </td>
-  <% end %>
 </tr>
