@@ -1,0 +1,4 @@
+page.replace_html :follow_form, :partial => 'users/follow'
+#page.replace_html :"sidebar round", :partial => 'pages/stats'
+page.replace_html :followers, "#{@user.followers.count} followers"
+

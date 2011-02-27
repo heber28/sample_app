@@ -4,18 +4,20 @@
       <h2>
         <%= image_tag(gravatar_url(@user.email))%>
         <%= h @user.name %>
-      </h2>      
+      </h2> 
+      <%= render 'follow_form' if signed_in? %>     
       <% unless @user.microposts.empty? %>
-        <table class="microposts">
-          <%= render @microposts %>
-        </table>
-        <%= will_paginate @microposts %>
+          <table class="microposts">
+            <%= render @microposts %>
+          </table>
+          <%= will_paginate @microposts %>
       <% end %>
     </td>
     <td class="sidebar round">
-      <strong>Name</strong> <%= h @user.name %><br />
+      <strong>Name</strong> <%= @user.name %><br />
       <strong>URL</strong>  <%= link_to user_path(@user), @user %><br />
       <strong>Microposts</strong> <%= @user.microposts.count %>
+      <%= render 'pages/stats' %>
     </td>
   </tr>
 </table>
